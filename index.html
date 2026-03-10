@@ -10,6 +10,614 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>orbit | Cobranca inteligente com IA</title>
+    <meta name="description" content="Agentes de voz e WhatsApp com IA que negociam dividas de forma humana, 24/7. Recupere mais, gaste menos.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #1E3A5F;
+            --accent: #38BDF8;
+            --accent-dark: #0EA5E9;
+            --accent-glow: rgba(56, 189, 248, 0.12);
+            --bg: #050A14;
+            --bg-alt: #080E1C;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text: #F0F4F8;
+            --text-secondary: #8899B0;
+            --text-muted: #4B5C73;
+            --border: rgba(56, 189, 248, 0.08);
+            --radius-lg: 20px;
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+        /* ── Nav ── */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 18px 0;
+            background: rgba(5, 10, 20, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s;
+        }
+        nav.scrolled { border-bottom-color: var(--border); }
+        nav .container { display: flex; align-items: center; justify-content: space-between; }
+        .logo-text { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; text-decoration: none; }
+        .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; letter-spacing: 0.2px; }
+        .nav-links a:hover { color: var(--text); }
+        .nav-links a.btn-nav {
+            padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 700;
+            background: white; color: #1E3A5F; text-decoration: none; transition: all 0.2s;
+        }
+        .nav-links a.btn-nav:hover { background: #E2E8F0; color: #1E3A5F; transform: translateY(-1px); }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            text-align: center; position: relative; padding: 120px 0 80px;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 900px; height: 600px;
+            background: radial-gradient(ellipse at center top, rgba(56, 189, 248, 0.10) 0%, rgba(30, 58, 95, 0.06) 40%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero::after {
+            content: ''; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.04) 0%, transparent 60%);
+            pointer-events: none; filter: blur(60px);
+        }
+        .hero-inner { position: relative; z-index: 2; }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 7px 18px; background: rgba(56, 189, 248, 0.06);
+            border: 1px solid rgba(56, 189, 248, 0.12); border-radius: 100px;
+            font-size: 12px; font-weight: 600; color: var(--accent);
+            letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 40px;
+        }
+        .hero-badge .dot {
+            width: 5px; height: 5px; background: var(--accent);
+            border-radius: 50%; animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .hero h1 {
+            font-size: clamp(48px, 7vw, 80px); font-weight: 800;
+            line-height: 1.05; letter-spacing: -3px; margin-bottom: 0;
+            color: rgba(240, 244, 248, 0.9);
+        }
+
+        /* Rotating text */
+        .rotating-wrapper {
+            display: inline-block; position: relative;
+            height: clamp(62px, 8.5vw, 96px); overflow: hidden; vertical-align: bottom;
+        }
+        .rotating-text {
+            display: flex; flex-direction: column;
+            animation: rotateText 8s ease-in-out infinite;
+        }
+        .rotating-text span {
+            height: clamp(62px, 8.5vw, 96px); display: flex; align-items: center;
+            justify-content: center; padding-bottom: 6px;
+            background: linear-gradient(135deg, #38BDF8 0%, #60A5FA 50%, #93C5FD 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            white-space: nowrap;
+        }
+        @keyframes rotateText {
+            0%, 20% { transform: translateY(0); }
+            25%, 45% { transform: translateY(calc(-1 * clamp(62px, 8.5vw, 96px))); }
+            50%, 70% { transform: translateY(calc(-2 * clamp(62px, 8.5vw, 96px))); }
+            75%, 95% { transform: translateY(calc(-3 * clamp(62px, 8.5vw, 96px))); }
+            100% { transform: translateY(0); }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(15px, 1.8vw, 17px); color: var(--text-secondary);
+            max-width: 480px; margin: 32px auto 48px; line-height: 1.8; font-weight: 400;
+        }
+        .hero-cta {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 16px 36px; border-radius: 12px; font-size: 15px; font-weight: 600;
+            background: white; color: var(--bg); text-decoration: none; transition: all 0.25s ease;
+        }
+        .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,255,255,0.1); }
+        .hero-cta svg { width: 16px; height: 16px; }
+
+        /* ── Section shared ── */
+        section { padding: 140px 0; }
+        .section-label {
+            font-size: 14px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 3px; color: var(--accent); margin-bottom: 20px;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+        .section-label::before {
+            content: ''; width: 24px; height: 2px; background: var(--accent); display: inline-block;
+        }
+        .section-title {
+            font-size: clamp(32px, 4.5vw, 52px); font-weight: 800;
+            letter-spacing: -2px; line-height: 1.1; margin-bottom: 20px;
+        }
+        .section-subtitle {
+            font-size: 16px; color: var(--text-secondary); max-width: 500px; line-height: 1.8;
+        }
+
+        /* ── Value Prop - rotating text section ── */
+        .value-section { text-align: center; position: relative; }
+        .value-section::before {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 600px; height: 400px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.04) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .value-left { font-size: clamp(28px, 4vw, 44px); font-weight: 700; letter-spacing: -1.5px; color: rgba(240,244,248,0.5); }
+        .value-right {
+            font-size: clamp(28px, 4vw, 44px); font-weight: 700; letter-spacing: -1.5px;
+            color: var(--accent);
+        }
+        .value-rotating {
+            display: inline-block; position: relative;
+            height: clamp(36px, 5vw, 56px); overflow: hidden; vertical-align: bottom;
+        }
+        .value-rotating-inner {
+            display: flex; flex-direction: column;
+            animation: valRotate 10s ease-in-out infinite;
+        }
+        .value-rotating-inner span {
+            height: clamp(36px, 5vw, 56px); display: flex; align-items: center; justify-content: center;
+            white-space: nowrap;
+        }
+        @keyframes valRotate {
+            0%, 16% { transform: translateY(0); }
+            20%, 36% { transform: translateY(calc(-1 * clamp(36px, 5vw, 56px))); }
+            40%, 56% { transform: translateY(calc(-2 * clamp(36px, 5vw, 56px))); }
+            60%, 76% { transform: translateY(calc(-3 * clamp(36px, 5vw, 56px))); }
+            80%, 96% { transform: translateY(calc(-4 * clamp(36px, 5vw, 56px))); }
+            100% { transform: translateY(0); }
+        }
+
+        /* ── How it works ── */
+        .steps-section { }
+        .steps-header { margin-bottom: 80px; }
+        .steps-grid { display: flex; flex-direction: column; gap: 0; position: relative; }
+        .steps-grid::before {
+            content: ''; position: absolute; left: 28px; top: 0; bottom: 0;
+            width: 1px; background: linear-gradient(to bottom, transparent, rgba(56,189,248,0.15), transparent);
+        }
+        .step-item {
+            display: grid; grid-template-columns: 56px 1fr; gap: 32px;
+            padding: 40px 0; position: relative;
+        }
+        .step-num {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: var(--bg-card); border: 1px solid rgba(56,189,248,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 700; color: var(--accent);
+            position: relative; z-index: 2;
+        }
+        .step-content h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+        .step-content p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 500px; }
+
+        /* ── Features ── */
+        .features-section { position: relative; }
+        .features-header { margin-bottom: 80px; }
+        .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .feature-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 40px; transition: all 0.4s ease;
+            position: relative; overflow: hidden;
+        }
+        .feature-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56,189,248,0.15), transparent);
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .feature-card:hover { border-color: rgba(56,189,248,0.15); transform: translateY(-2px); }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            background: rgba(56,189,248,0.06); border: 1px solid rgba(56,189,248,0.1);
+            display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
+        }
+        .feature-icon svg { width: 22px; height: 22px; }
+        .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.3px; }
+        .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.8; }
+
+        /* ── Channels ── */
+        .channels-section { text-align: center; }
+        .channels-header { margin-bottom: 80px; }
+        .channels-header .section-subtitle { margin: 0 auto; }
+        .channels-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .channel-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 48px 32px; transition: all 0.4s ease;
+        }
+        .channel-card:hover { border-color: rgba(56,189,248,0.15); transform: translateY(-2px); }
+        .channel-icon { margin-bottom: 20px; }
+        .channel-icon svg { width: 32px; height: 32px; }
+        .channel-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.3px; }
+        .channel-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+        /* ── CTA ── */
+        .cta-section {
+            text-align: center; position: relative; padding: 160px 0;
+        }
+        .cta-section::before {
+            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 800px; height: 100%;
+            background: radial-gradient(ellipse at center, rgba(56,189,248,0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .cta-title {
+            font-size: clamp(36px, 5vw, 56px); font-weight: 800;
+            letter-spacing: -2px; line-height: 1.1; margin-bottom: 20px;
+            position: relative; z-index: 2;
+        }
+        .cta-subtitle {
+            font-size: 16px; color: var(--text-secondary); max-width: 420px;
+            margin: 0 auto 40px; line-height: 1.7; position: relative; z-index: 2;
+        }
+        .cta-buttons { display: flex; align-items: center; justify-content: center; gap: 16px; position: relative; z-index: 2; }
+        .cta-btn-primary {
+            padding: 16px 36px; border-radius: 12px; font-size: 15px; font-weight: 600;
+            background: white; color: var(--bg); text-decoration: none; transition: all 0.25s;
+        }
+        .cta-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(255,255,255,0.1); }
+        .cta-btn-secondary {
+            padding: 16px 36px; border-radius: 12px; font-size: 15px; font-weight: 600;
+            background: transparent; color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none; transition: all 0.25s;
+        }
+        .cta-btn-secondary:hover { border-color: rgba(255,255,255,0.25); color: var(--text); }
+
+        /* ── Footer ── */
+        footer {
+            padding: 48px 0; border-top: 1px solid var(--border);
+        }
+        .footer-content { display: flex; align-items: center; justify-content: space-between; }
+        .footer-brand { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+        .footer-copy { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+        .footer-links a {
+            color: var(--text-muted); text-decoration: none; font-size: 12px; transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--text); }
+
+        /* ── Divider ── */
+        .divider {
+            width: 100%; height: 1px; max-width: 1100px; margin: 0 auto;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+        }
+
+        /* ── Mobile menu ── */
+        .mobile-toggle {
+            display: none; background: none; border: none; cursor: pointer;
+            padding: 8px; color: var(--text);
+        }
+        .mobile-toggle svg { width: 24px; height: 24px; }
+        .mobile-menu {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 10, 20, 0.97); z-index: 99;
+            flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a {
+            color: var(--text); text-decoration: none; font-size: 20px; font-weight: 600;
+            letter-spacing: -0.3px; transition: color 0.2s;
+        }
+        .mobile-menu a:hover { color: var(--accent); }
+        .mobile-menu .btn-nav-mobile {
+            padding: 14px 32px; border-radius: 10px; font-size: 16px; font-weight: 700;
+            background: white; color: var(--bg); margin-top: 8px;
+        }
+        .mobile-close {
+            position: absolute; top: 20px; right: 24px; background: none; border: none;
+            color: var(--text); cursor: pointer; padding: 8px;
+        }
+        .mobile-close svg { width: 28px; height: 28px; }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .container { padding: 0 20px; }
+            .mobile-toggle { display: block; }
+            .nav-links { display: none; }
+
+            .hero { min-height: auto; padding: 120px 0 80px; }
+            .hero h1 { font-size: clamp(36px, 10vw, 52px); letter-spacing: -1.5px; }
+            .rotating-wrapper { height: clamp(44px, 11vw, 58px); }
+            .rotating-text span {
+                height: clamp(44px, 11vw, 58px); padding-bottom: 4px;
+                font-size: clamp(36px, 10vw, 52px);
+            }
+            @keyframes rotateText {
+                0%, 20% { transform: translateY(0); }
+                25%, 45% { transform: translateY(calc(-1 * clamp(44px, 11vw, 58px))); }
+                50%, 70% { transform: translateY(calc(-2 * clamp(44px, 11vw, 58px))); }
+                75%, 95% { transform: translateY(calc(-3 * clamp(44px, 11vw, 58px))); }
+                100% { transform: translateY(0); }
+            }
+            .hero-subtitle { font-size: 15px; margin: 24px auto 36px; max-width: 340px; }
+            .hero-cta { padding: 14px 28px; font-size: 14px; }
+
+            section { padding: 80px 0; }
+            .section-title { font-size: clamp(28px, 7vw, 36px); letter-spacing: -1px; }
+            .section-subtitle { font-size: 14px; }
+
+            .value-left { font-size: clamp(22px, 6vw, 30px); }
+            .value-right { font-size: clamp(22px, 6vw, 30px); }
+            .value-rotating { height: clamp(28px, 7vw, 38px); }
+            .value-rotating-inner span { height: clamp(28px, 7vw, 38px); }
+
+            .steps-grid::before { display: none; }
+            .step-item { grid-template-columns: 1fr; gap: 16px; padding: 24px 0; }
+            .step-num { width: 44px; height: 44px; font-size: 16px; border-radius: 10px; }
+            .step-content h3 { font-size: 18px; }
+            .step-content p { font-size: 14px; }
+
+            .features-grid { grid-template-columns: 1fr; }
+            .feature-card { padding: 28px; }
+            .feature-card h3 { font-size: 16px; }
+            .feature-card p { font-size: 13px; }
+
+            .channels-row { grid-template-columns: 1fr; }
+            .channel-card { padding: 32px 24px; }
+            .channel-card h3 { font-size: 16px; }
+            .channel-card p { font-size: 13px; }
+
+            .cta-section { padding: 100px 0; }
+            .cta-title { font-size: clamp(30px, 8vw, 40px); letter-spacing: -1.5px; }
+            .cta-subtitle { font-size: 14px; }
+            .cta-buttons { flex-direction: column; }
+            .cta-btn-primary { padding: 14px 28px; font-size: 14px; text-align: center; }
+
+            .footer-content { flex-direction: column; gap: 20px; text-align: center; }
+        }
+
+        @media (max-width: 380px) {
+            .hero h1 { font-size: 32px; }
+            .rotating-wrapper { height: 40px; }
+            .rotating-text span { height: 40px; font-size: 32px; }
+        }
+
+        /* ── Animations ── */
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <a href="#" class="logo-text">orbit</a>
+            <ul class="nav-links">
+                <li><a href="#como-funciona">Como funciona</a></li>
+                <li><a href="#beneficios">Diferenciais</a></li>
+                <li><a href="#canais">Canais</a></li>
+                <li><a href="mailto:contato@useorbit.tech" class="btn-nav">Agendar demo</a></li>
+            </ul>
+            <button class="mobile-toggle" onclick="document.getElementById('mobileMenu').classList.add('open')" aria-label="Menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+        <button class="mobile-close" onclick="document.getElementById('mobileMenu').classList.remove('open')" aria-label="Fechar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <a href="#como-funciona" onclick="document.getElementById('mobileMenu').classList.remove('open')">Como funciona</a>
+        <a href="#beneficios" onclick="document.getElementById('mobileMenu').classList.remove('open')">Diferenciais</a>
+        <a href="#canais" onclick="document.getElementById('mobileMenu').classList.remove('open')">Canais</a>
+        <a href="mailto:contato@useorbit.tech" class="btn-nav-mobile">Agendar demo</a>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="hero-badge"><span class="dot"></span> Cobranca automatizada com IA</div>
+            <h1>
+                Cobranca que<br>
+                <span class="rotating-wrapper">
+                    <span class="rotating-text">
+                        <span>conversa de verdade</span>
+                        <span>negocia por voce</span>
+                        <span>recupera receita</span>
+                        <span>funciona 24 horas</span>
+                    </span>
+                </span>
+            </h1>
+            <p class="hero-subtitle">Agentes de voz e WhatsApp com inteligencia artificial que negociam dividas de forma humana, personalizada e autonoma.</p>
+            <a href="mailto:contato@useorbit.tech" class="hero-cta">
+                Agendar demonstracao
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Value Prop -->
+    <section class="value-section">
+        <div class="container reveal">
+            <span class="value-left">A melhor tecnologia para</span><br>
+            <span class="value-right">
+                <span class="value-rotating">
+                    <span class="value-rotating-inner">
+                        <span>recuperar receita</span>
+                        <span>reduzir custos</span>
+                        <span>escalar operacao</span>
+                        <span>fechar acordos</span>
+                        <span>recuperar receita</span>
+                    </span>
+                </span>
+            </span>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- How it works -->
+    <section id="como-funciona" class="steps-section">
+        <div class="container">
+            <div class="steps-header reveal">
+                <div class="section-label">Como funciona</div>
+                <h2 class="section-title">Integre em dias,<br>nao em meses</h2>
+                <p class="section-subtitle">Em poucos dias, nosso agente de IA comeca a negociar com seus devedores de forma autonoma.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-item reveal">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <h3>Envie sua carteira</h3>
+                        <p>Importe sua base de devedores via planilha ou API. Nos integramos com seu sistema de gestao existente.</p>
+                    </div>
+                </div>
+                <div class="step-item reveal reveal-delay-1">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <h3>A IA negocia</h3>
+                        <p>Nosso agente liga e envia mensagens para cada devedor, oferecendo descontos e parcelamentos personalizados dentro das suas regras.</p>
+                    </div>
+                </div>
+                <div class="step-item reveal reveal-delay-2">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <h3>Acompanhe os resultados</h3>
+                        <p>Dashboard em tempo real com acordos fechados, valores recuperados e transcricoes de cada conversa.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Features -->
+    <section id="beneficios" class="features-section">
+        <div class="container">
+            <div class="features-header reveal">
+                <div class="section-label">Diferenciais</div>
+                <h2 class="section-title">Cobranca inteligente,<br>nao robotica</h2>
+                <p class="section-subtitle">Diferente de robos tradicionais, nosso agente entende contexto, adapta o tom e negocia de verdade.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+                    <h3>IA que negocia de verdade</h3>
+                    <p>O agente entende o devedor, adapta argumentos em tempo real e oferece as melhores condicoes dentro das regras que voce define.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-1">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+                    <h3>Voz natural e empatica</h3>
+                    <p>Ligacoes com voz humana, pausas naturais e tom empatico. Uma experiencia que respeita o devedor e gera resultado.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-2">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                    <h3>Escala sem limites</h3>
+                    <p>Faca milhares de ligacoes por dia com a mesma qualidade. Sem contratar, treinar ou gerenciar equipe.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-3">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                    <h3>Suas regras, nossa IA</h3>
+                    <p>Configure descontos, parcelamentos, horarios e tom de voz. A IA segue sua politica de cobranca a risca.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Channels -->
+    <section id="canais" class="channels-section">
+        <div class="container">
+            <div class="channels-header reveal">
+                <div class="section-label">Canais</div>
+                <h2 class="section-title">Onde seu devedor estiver</h2>
+                <p class="section-subtitle">Abordagem multicanal que escolhe o melhor canal e horario para cada perfil de devedor.</p>
+            </div>
+            <div class="channels-row">
+                <div class="channel-card reveal">
+                    <div class="channel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                    <h3>Voz</h3>
+                    <p>Agente de voz com IA que liga, negocia e fecha acordos em tempo real. Disponivel 24 horas.</p>
+                </div>
+                <div class="channel-card reveal reveal-delay-1">
+                    <div class="channel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                    <h3>WhatsApp</h3>
+                    <p>Mensagens personalizadas com negociacao automatica. O canal preferido do brasileiro.</p>
+                </div>
+                <div class="channel-card reveal reveal-delay-2">
+                    <div class="channel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                    <h3>Email e SMS</h3>
+                    <p>Sequencias que preparam o terreno antes da ligacao e reforcam o contato depois.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="contato" class="cta-section">
+        <div class="container">
+            <h2 class="cta-title reveal">Pronto para<br>recuperar mais?</h2>
+            <p class="cta-subtitle reveal reveal-delay-1">Agende uma demonstracao gratuita e veja nosso agente de IA negociando ao vivo.</p>
+            <div class="cta-buttons reveal reveal-delay-2">
+                <a href="mailto:contato@useorbit.tech" class="cta-btn-primary">Entrar em contato</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">orbit</div>
+                    <p class="footer-copy">&copy; 2026 orbit. Todos os direitos reservados.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="mailto:contato@useorbit.tech">contato@useorbit.tech</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Nav scroll
+        window.addEventListener('scroll', () => {
+            document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50);
+        });
+    </script>
+</body>
+</html>
 
         :root {
             --primary: #1E3A5F;
