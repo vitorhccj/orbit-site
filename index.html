@@ -147,7 +147,7 @@
             letter-spacing: -2px; line-height: 1.1; margin-bottom: 20px;
         }
         .section-subtitle {
-            font-size: 16px; color: var(--text-secondary); max-width: 500px; line-height: 1.8;
+            font-size: 16px; color: var(--text-secondary); max-width: 500px; line-height: 1.8; margin: 0 auto;
         }
 
         /* ── Value Prop - rotating text section ── */
@@ -186,7 +186,7 @@
 
         /* ── How it works ── */
         .steps-section { }
-        .steps-header { margin-bottom: 80px; }
+        .steps-header { margin-bottom: 80px; text-align: center; }
         .steps-grid { display: flex; flex-direction: column; gap: 0; position: relative; }
         .steps-grid::before {
             content: ''; position: absolute; left: 28px; top: 0; bottom: 0;
@@ -208,7 +208,7 @@
 
         /* ── Features ── */
         .features-section { position: relative; }
-        .features-header { margin-bottom: 80px; }
+        .features-header { margin-bottom: 80px; text-align: center; }
         .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .feature-card {
             background: var(--bg-card); border: 1px solid var(--border);
@@ -233,8 +233,8 @@
 
         /* ── Channels ── */
         .channels-section { }
-        .channels-header { margin-bottom: 80px; }
-        .channels-header .section-subtitle { }
+        .channels-header { margin-bottom: 80px; text-align: center; }
+        .channels-header .section-subtitle { margin: 0 auto; }
         .channels-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
         .channel-card {
             background: var(--bg-card); border: 1px solid var(--border);
