@@ -135,7 +135,7 @@
         /* ── Section shared ── */
         section { padding: 140px 0; }
         .section-label {
-            font-size: 14px; font-weight: 700; text-transform: uppercase;
+            font-size: 20px; font-weight: 700; text-transform: uppercase;
             letter-spacing: 3px; color: var(--accent); margin-bottom: 20px;
             display: inline-flex; align-items: center; gap: 10px;
         }
@@ -232,13 +232,14 @@
         .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.8; }
 
         /* ── Channels ── */
-        .channels-section { text-align: center; }
+        .channels-section { }
         .channels-header { margin-bottom: 80px; }
-        .channels-header .section-subtitle { margin: 0 auto; }
+        .channels-header .section-subtitle { }
         .channels-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
         .channel-card {
             background: var(--bg-card); border: 1px solid var(--border);
             border-radius: var(--radius-lg); padding: 48px 32px; transition: all 0.4s ease;
+            text-align: center;
         }
         .channel-card:hover { border-color: rgba(56,189,248,0.15); transform: translateY(-2px); }
         .channel-icon { margin-bottom: 20px; }
